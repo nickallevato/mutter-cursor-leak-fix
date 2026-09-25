@@ -16,6 +16,8 @@ of them on the compositor thread.
 backports that one patch onto Ubuntu's package, includes a headless reproducer that proves
 the leak and the fix, and has a build script for anyone who wants the fix now.
 
+**Affected?** Add yourself to [issue #1](https://github.com/nickallevato/mutter-cursor-leak-fix/issues/1). Progress on getting this into Ubuntu is tracked in [#2](https://github.com/nickallevato/mutter-cursor-leak-fix/issues/2).
+
 > **Built with AI, and proud of it.** The whole investigation was done by
 > [Claude Code](https://claude.com/claude-code) (Claude Opus 5.5) working on the affected
 > machine. That covered bpftrace and perf on a live compositor, reading mutter's source to
