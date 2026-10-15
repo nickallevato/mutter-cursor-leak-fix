@@ -24,6 +24,10 @@ handlers on `cursor-painted`, all the same callback (`on_cursor_painted`); ~380,
 `g_closure_invoke` calls per second; gnome-shell main thread at 42 % vs ~15 % when healthy;
 non-primary CRTCs at 50–66 ms per frame. Restarting the client apps freed none of it.
 
+Independently confirmed by a second user on an AMD iGPU laptop (Ubuntu 26.04), so it is not
+NVIDIA-specific; logging out clears it. 50.1-0ubuntu2.5 (resolute-proposed, 2026-10-08) does not
+include the fix.
+
 Cause: 95d44e93 ("wayland: Keep ref on surface at MetaWaylandCursor") created a reference
 cycle, MetaWaylandSurface → role (MetaWaylandCursorSurface) → MetaCursorWayland → strong
 ref back to the surface. Upstream fixed it on gnome-50 with 918da17b ("cursor/wayland:
