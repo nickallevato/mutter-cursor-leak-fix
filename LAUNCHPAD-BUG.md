@@ -67,3 +67,32 @@ applies cleanly on top of 50.1-0ubuntu2.4.
 Investigated, backported and tested with the help of an AI coding agent (Claude Code);
 findings and numbers were checked on the affected machine. Workaround until fixed: log out
 and back in.
+
+---
+
+## Follow-up comment for LP #2171024 (2026-11-10), with the debdiff attached
+
+**Attach:** `patch/mutter_50.1-0ubuntu2.7.debdiff` (tick "This attachment is a patch"), then
+subscribe `ubuntu-sponsors`. Regenerate against a newer base with `build/debdiff.sh`.
+
+**Comment:**
+
+Attaching a debdiff for resolute: 50.1-0ubuntu2.6 (currently in resolute-proposed) plus the
+upstream fix 918da17b as 50.1-0ubuntu2.7. The patch is the unmodified gnome-50 commit with
+DEP-3 headers; it applies without fuzz on 2.5 and 2.6. Please adjust the version and
+changelog as needed.
+
+New data since filing:
+
+- 50.1-0ubuntu2.5 (resolute-updates since 2026-10-22) still leaks: the headless reproducer
+  shows 30 of 30 cursor surfaces alive after all clients exited; 2.5 + the patch shows 0 of
+  30, with no criticals in the mutter log.
+- The 2.6 changelog in resolute-proposed does not include the fix either.
+- Regression in the field: the affected desktop ran a locally patched 2.4 from 2026-09-24
+  with no recurrence (21 handlers on `cursor-painted` after 2 days). The 2.5 update replaced
+  that build on 2026-11-04; 14 hours into a session on 2026-11-10 the same callback again had
+  8,083 handlers and ~53,000 handler invocations per second, with a stuttering pointer.
+  Rebuilding 2.5 with the patch fixes it again.
+
+Could the bug be nominated for Resolute? Reproducer and build scripts:
+https://github.com/nickallevato/mutter-cursor-leak-fix

@@ -11,6 +11,9 @@ handle the surface disappearing gracefully.
 
 Part-of: <https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/5097>
 (cherry picked from commit e8d998b52af31347d2ce83c39ae7eaa4c4d28586)
+
+Origin: upstream, https://gitlab.gnome.org/GNOME/mutter/-/commit/918da17b0be2286382772ee38d53311b0be146b4
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/2171024
 ---
  src/wayland/meta-cursor-wayland.c | 15 +++++++++++----
  1 file changed, 11 insertions(+), 4 deletions(-)

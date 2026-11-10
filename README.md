@@ -12,7 +12,7 @@ of them on the compositor thread.
 
 **Fix:** already upstream. [Jonas Ådahl's commit 918da17b](https://gitlab.gnome.org/GNOME/mutter/-/commit/918da17b0be2286382772ee38d53311b0be146b4)
 (MR [!5097](https://gitlab.gnome.org/GNOME/mutter/-/merge_requests/5097)) is in mutter
-**50.3+**. Ubuntu 26.04 still ships **50.1-0ubuntu2.4**, which does not have it. This repo
+**50.3+**. Ubuntu 26.04 still ships **50.1-0ubuntu2.5** (and has 2.6 in `resolute-proposed`), neither of which has it. This repo
 backports that one patch onto Ubuntu's package, includes a headless reproducer that proves
 the leak and the fix, and has a build script for anyone who wants the fix now.
 
@@ -89,21 +89,28 @@ pointer, sets a texture cursor, and exits. An `LD_PRELOAD` shim wraps `g_object_
 puts a weak ref on every `MetaWaylandCursorSurface` and `MetaCursorWayland`, so
 *live = created − disposed*.
 
-30 clients, run on 2026-09-24:
+30 clients, run on 2026-09-24 (2.2, 2.4) and 2026-11-10 (2.5):
 
 | libmutter-18-0 | cursor surfaces still alive after every client exited |
 |---|---|
 | 50.1-0ubuntu2.2 (stock) | **30 / 30** |
-| 50.1-0ubuntu2.4 (stock, current `resolute-updates`) | **30 / 30** |
+| 50.1-0ubuntu2.4 (stock) | **30 / 30** |
 | 50.1-0ubuntu2.4 + 918da17b (this repo) | **0 / 30** |
+| 50.1-0ubuntu2.5 (stock, current `resolute-updates`) | **30 / 30** |
+| 50.1-0ubuntu2.5 + 918da17b (this repo) | **0 / 30** |
 
 The patched build never had more than 1 alive at a time, which is the current client's.
 The same run also covers the patch's new NULL-surface path: each client exits while its
 cursor is still shown. Across all runs there were no crashes and no criticals.
 
 On the real desktop, the slowdown was gone after installing the patched package and logging
-back in. It was installed on 2026-09-24, so confirmation over several days of uptime is still
-pending; this README will be updated.
+back in (installed 2026-09-24; at 2 days of session uptime on 2026-09-29 the largest handler
+group was 21, against 20,388 before).
+
+It then came back exactly as predicted: on 2026-11-04 Ubuntu's 50.1-0ubuntu2.5 update replaced
+the patched library, and on 2026-11-10, 14 hours into a session, the same callback had 8,083
+handlers again with a visibly stuttering cursor. **A local build is superseded, and the leak
+returns, every time Ubuntu publishes a mutter update without the fix. Rebuild after each one.**
 
 Run it yourself (needs `gcc`, `python3-gi` with GTK 4, `dbus-run-session`):
 
@@ -129,12 +136,13 @@ sudo dpkg -i out/{libmutter-18-0,gir1.2-mutter-18,mutter-common,mutter-common-bi
 # then log out and back in
 ```
 
-The package version is `50.1-0ubuntu2.4+cursorfix1`, so Ubuntu's next real mutter update
-supersedes it automatically. To roll back:
+The script patches whatever mutter version `resolute-updates` currently has (override with
+`-e BASE=50.1-0ubuntu2.5`) and versions the result `<base>+cursorfix1`, so Ubuntu's next real
+mutter update supersedes it automatically. To roll back:
 
 ```bash
-sudo apt install --allow-downgrades libmutter-18-0=50.1-0ubuntu2.4 gir1.2-mutter-18=50.1-0ubuntu2.4 \
-  mutter-common=50.1-0ubuntu2.4 mutter-common-bin=50.1-0ubuntu2.4
+sudo apt install --allow-downgrades libmutter-18-0=50.1-0ubuntu2.5 gir1.2-mutter-18=50.1-0ubuntu2.5 \
+  mutter-common=50.1-0ubuntu2.5 mutter-common-bin=50.1-0ubuntu2.5
 ```
 
 Until you install a fixed build, **logging out and back in** is the only workaround. It

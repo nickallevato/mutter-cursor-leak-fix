@@ -8,9 +8,9 @@
 set -euo pipefail
 T=$(cd "$(dirname "$0")" && pwd); W=$T/work; mkdir -p "$W"; cd "$W"
 LP=https://launchpad.net/ubuntu/+archive/primary/+files
-curl -fsSLO "$LP/mutter_50.1-0ubuntu2.4_amd64.deb"
+curl -fsSLO "$LP/mutter_50.1-0ubuntu2.5_amd64.deb"
 curl -fsSLO "$LP/libmutter-18-0_50.1-0ubuntu2.2_amd64.deb"
-dpkg-deb -x mutter_50.1-0ubuntu2.4_amd64.deb mutter-bin
+dpkg-deb -x mutter_50.1-0ubuntu2.5_amd64.deb mutter-bin
 dpkg-deb -x libmutter-18-0_50.1-0ubuntu2.2_amd64.deb old
 gcc -shared -fPIC -O2 -o count.so "$T/count.c" -lpthread
 echo "ready: dbus-run-session -- $T/run.sh old 30 $W/old"
